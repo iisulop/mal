@@ -86,9 +86,9 @@ DOCKERIZE =
 
 IMPLS = ada ada.2 awk bash basic c chuck clojure coffee common-lisp cpp crystal cs d dart \
 	elisp elixir elm erlang es6 factor fantom forth fsharp go groovy gnu-smalltalk \
-	guile haskell haxe hy io java js julia kotlin livescript logo lua make mal \
+	guile haskell haxe hy io is-python java js julia kotlin livescript logo lua make mal \
 	matlab miniMAL nasm nim objc objpascal ocaml perl perl6 php picolisp plpgsql \
-	plsql powershell ps python r racket rexx rpython ruby rust scala scheme skew \
+	plsql powershell ps python racket rexx rpython ruby rust scala scheme skew \
 	swift swift3 swift4 tcl ts vb vhdl vimscript wasm yorick
 
 EXTENSION = .mal
@@ -173,6 +173,8 @@ scheme_STEP_TO_PROG_chicken     = scheme/$($(1))
 scheme_STEP_TO_PROG_sagittarius = scheme/$($(1)).scm
 scheme_STEP_TO_PROG_cyclone     = scheme/$($(1))
 scheme_STEP_TO_PROG_foment      = scheme/$($(1)).scm
+
+is-python_STEP_TO_PROG            = is-python/$($(1)).py
 
 # Map of step (e.g. "step8") to executable file for that step
 ada_STEP_TO_PROG =     ada/$($(1))
