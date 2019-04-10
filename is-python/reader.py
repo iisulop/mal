@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Type
 import re
-from mal_types import MalList, MalInt, MalString, MalUnbalancedException, MalType, PARENS, QUOTES
+from mal_types import MalList, MalInt, MalString, MalUnbalancedException, MalType, PARENS, QUOTES, MalKeyword, \
+    MalBoolType, MalNilType
 
 
 def log_print(*args):
@@ -27,12 +28,16 @@ def tokenize(line: str) -> List[str]:
     return r.findall(line)
 
 
-def closing_for(opening):
+def closing_for(opening: str) -> str:
     return PARENS[opening]['end']
 
 
-def type_for(opening):
+def type_for(opening: str) -> Type[MalList]:
     return PARENS[opening]['type']
+
+
+def check_val(opening: str, val: MalList):
+    PARENS[opening].get('checker', lambda x: None)(val)
 
 
 def read_list(reader: Reader) -> MalList:
@@ -48,6 +53,7 @@ def read_list(reader: Reader) -> MalList:
         raise MalUnbalancedException(f'unbalanced `{opening}`') from e
     val = reader.next()
     log_print(f'val {val}')
+    check_val(opening, atoms)
     return atoms
 
 
@@ -68,10 +74,14 @@ def read_atom(reader: Reader) -> MalType:
                 val.append(read_form(reader))
                 val.append(last)
             return val
+        if atom == 'nil':
+            return MalNilType(atom)
+        if atom in ['true, false']:
+            return MalBoolType(atom)
         return MalString(atom)
 
 
-def read_string(reader: Reader) -> MalType:
+def read_string(reader: Reader) -> MalString:
     atom = reader.next()
     while atom[-2:] == '\\"':
         atom += reader.next()
@@ -82,6 +92,11 @@ def read_string(reader: Reader) -> MalType:
     return MalString(atom)
 
 
+def read_keyword(reader: Reader) -> MalKeyword:
+    atom = reader.next()
+    return MalKeyword(atom)
+
+
 def read_form(reader: Reader) -> list:
     char = reader.peek()
     log_print(f'char {char}')
@@ -89,6 +104,8 @@ def read_form(reader: Reader) -> list:
         val = read_list(reader)
     elif char.startswith('"'):
         val = read_string(reader)
+    elif char.startswith(':'):
+        val = read_keyword(reader)
     else:
         val = read_atom(reader)
     return val
