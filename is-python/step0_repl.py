@@ -1,5 +1,6 @@
 PROMPT = 'user> '
 
+
 def READ(line: str) -> str:
     return line
 
